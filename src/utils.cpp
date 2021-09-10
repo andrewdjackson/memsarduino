@@ -1,8 +1,7 @@
 #include "utils.h"
 
-void dprintf(const char *fmt, ...) {
 #ifdef DEBUG
-
+void dprintf(const char *fmt, ...) {
    char buffer[LOG_BUFFER_SIZE];
 
    va_list arg;
@@ -12,9 +11,8 @@ void dprintf(const char *fmt, ...) {
    va_end(arg);
 
    MonitorSerial.println(buffer);
-
-#endif
 }
+#endif
 
 void simple_current_time(char *buf) {
    unsigned long t = millis();

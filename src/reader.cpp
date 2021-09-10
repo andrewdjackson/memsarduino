@@ -36,25 +36,31 @@ void setup_ports() {
 
 void reader_loop(sd_card *card) {
    if (!initialised) {
+      
+#ifdef DEBUG     
       dprintf("inf: intialising");
+#endif
       initialised = initialise();
    }
 
    if (initialised) {
-      sendToECU(MEMSDataframe7d, sizeof(MEMSDataframe7d));
-      readECU(response, DFRAME_7D_SIZE);
-      convert_hex_to_string(df7d, response, DFRAME_7D_SIZE);
+      sendToECU((uint8_t *)MEMSDataframe7d, sizeof(MEMSDataframe7d));
+      readECU((uint8_t *)response, DFRAME_7D_SIZE);
+      convert_hex_to_string((char *)df7d, (uint8_t *)response, DFRAME_7D_SIZE);
 
-      sendToECU(MEMSDataframe80, sizeof(MEMSDataframe80));
-      readECU(response, DFRAME_80_SIZE);
-      convert_hex_to_string(df80, response, DFRAME_80_SIZE);
+      sendToECU((uint8_t *)MEMSDataframe80, sizeof(MEMSDataframe80));
+      readECU((uint8_t *)response, DFRAME_80_SIZE);
+      convert_hex_to_string((char *)df80, (uint8_t *)response, DFRAME_80_SIZE);
 
       char memslog[MEMSDATA_BUFFER_SIZE];
       char timestamp[TIMESTAMP_SIZE];
 
       simple_current_time(timestamp);
       snprintf(memslog, MEMSDATA_BUFFER_SIZE, "%s,%s,%s", timestamp, df7d, df80);
+
+#ifdef DEBUG
       dprintf("%s", memslog);
+#endif
 
       write_log(card, memslog);
 
@@ -70,44 +76,54 @@ bool initialise() {
 
    uint8_t response[DATA_BUFFER_SIZE];
 
-   sendToECU(MEMSInitCommandA, sizeof(MEMSInitCommandA));
-   readECU(response, 1);
+   sendToECU((uint8_t *)MEMSInitCommandA, sizeof(MEMSInitCommandA));
+   readECU((uint8_t *)response, 1);
 
    if (response[0] != MEMSInitCommandA[0]) {
+#ifdef DEBUG
       dprintf("err: 0xCA command echo");
+#endif
       return false;
    }
 
    delay(1);
 
-   sendToECU(MEMSInitCommandB, sizeof(MEMSInitCommandB));
-   readECU(response, 1);
+   sendToECU((uint8_t *)MEMSInitCommandB, sizeof(MEMSInitCommandB));
+   readECU((uint8_t *)response, 1);
 
    if (response[0] != MEMSInitCommandB[0]) {
+#ifdef DEBUG
       dprintf("err: 0x75 command echo");
+#endif
       return false;
    }
 
    delay(1);
 
-   sendToECU(MEMSHeartbeat, sizeof(MEMSHeartbeat));
-   readECU(response, 2);
+   sendToECU((uint8_t *)MEMSHeartbeat, sizeof(MEMSHeartbeat));
+   readECU((uint8_t *)response, 2);
 
    if (response[0] != MEMSHeartbeat[0]) {
+#ifdef DEBUG
       dprintf("err: 0xF4 command echo");
+#endif
       return false;
    }
 
    delay(1);
 
-   sendToECU(MEMSInitECUID, sizeof(MEMSInitECUID));
-   readECU(response, 5);
+   sendToECU((uint8_t *)MEMSInitECUID, sizeof(MEMSInitECUID));
+   readECU((uint8_t *)response, 5);
 
    if (response[0] != MEMSInitECUID[0]) {
+#ifdef DEBUG
       dprintf("err: 0xD0 command echo");
+#endif
       return false;
    } else {
+#ifdef DEBUG
       dprintf("inf: ECU ID %02x %02x %02x %02x", response[1], response[2], response[3], response[4]);
+#endif
    }
 
    initialised = true;
@@ -159,7 +175,9 @@ void readECU(uint8_t *response, int size) {
 
    } else {
       flash_error_sequence(true, DATA_ERROR);
+#ifdef DEBUG
       dprintf("err: timed out (%d)", retries++);
+#endif
 
       if (retries >= MAX_RETIES) {
          initialised = false;

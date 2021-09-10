@@ -2,7 +2,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define DEBUG 0
+// #define DEBUG 1
 #define MonitorSerial Serial
 
 #define TIMEOUT 1000

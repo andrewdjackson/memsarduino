@@ -6,7 +6,9 @@
 #include <Arduino.h>
 
 void simple_current_time(char *buf);
+#ifdef DEBUG
 void dprintf(const char *fmt, ...);
+#endif
 void convert_dataframe7d_to_string(char *buf, mems_data_frame_7d *dframe, int size);
 void convert_dataframe80_to_string(char *buf, mems_data_frame_80 *dframe, int size);
 void convert_hex_to_string(char *buf, uint8_t *data, int size);

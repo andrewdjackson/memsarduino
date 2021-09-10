@@ -43,13 +43,20 @@ void get_filename(sd_card *card) {
       snprintf(newVersion, 6, "%05d", version);
       versionFile.close();
       versionFile = SD.open(VERSION_FILE, O_WRITE | O_CREAT | O_TRUNC);
+
+#ifdef DEBUG
       dprintf("inf: log version %s", newVersion);
+#endif
+
       versionFile.println(newVersion);
       versionFile.close();
 
       // set the filename
       snprintf(card->filename, 13, "RUN%05d.CSV", version);
+
+#ifdef DEBUG
       dprintf("inf: log filename %s", card->filename);
+#endif
    }
 }
 
