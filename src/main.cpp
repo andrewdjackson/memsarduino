@@ -38,16 +38,19 @@ void loop() {
             init_sd_card((sd_card *)&card);
          }
 
+         // 'l' list files on sd card
          if (cmd == (uint8_t)'l') {
             digitalWrite(LED_BUILTIN, LOW);
             list_files((sd_card *)&card);
          }
 
+         // 'f' get the filename
          if (cmd == (uint8_t)'f') {
             digitalWrite(LED_BUILTIN, LOW);
             get_filename((sd_card *)&card);
          }
 
+         // 'w' test write to sd card
          if (cmd == (uint8_t)'w') {
             digitalWrite(LED_BUILTIN, LOW);
             char data[10] = "123456789";
